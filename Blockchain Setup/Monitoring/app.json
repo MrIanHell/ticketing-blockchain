@@ -1,7 +1,7 @@
 [
   {
     "name"        : "geth-dev-0",
-    "cwd"         : ".",
+    "cwd"         : "./eth-net-intelligence-api",
     "script"      : "app.js",
     "log_date_format"   : "YYYY-MM-DD HH:mm Z",
     "merge_logs"    : false,
@@ -20,7 +20,7 @@
   },
   {
     "name"        : "geth-dev-1",
-    "cwd"         : ".",
+    "cwd"         : "./eth-net-intelligence-api",
     "script"      : "app.js",
     "log_date_format"   : "YYYY-MM-DD HH:mm Z",
     "merge_logs"    : false,
@@ -39,7 +39,7 @@
   },
   {
     "name"        : "geth-dev-2",
-    "cwd"         : ".",
+    "cwd"         : "./eth-net-intelligence-api",
     "script"      : "app.js",
     "log_date_format"   : "YYYY-MM-DD HH:mm Z",
     "merge_logs"    : false,
@@ -53,6 +53,20 @@
       "RPC_PORT"    : "8545",
       "INSTANCE_NAME"   : "geth-dev-2",
       "WS_SERVER"     : "http://172.25.0.103:3000",
+      "WS_SECRET"     : "test"
+    }
+  },
+  {
+    "name"        : "frontend",
+    "cwd"         : "./eth-netstats",
+    "script"      : "./bin/www",
+    "log_date_format"   : "YYYY-MM-DD HH:mm Z",
+    "merge_logs"    : false,
+    "watch"       : false,
+    "exec_interpreter"  : "node",
+    "exec_mode"     : "fork_mode",
+    "env":
+    {
       "WS_SECRET"     : "test"
     }
   }
