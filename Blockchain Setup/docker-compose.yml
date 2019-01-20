@@ -14,8 +14,8 @@ services:
       chainnet: 
         ipv4_address: 172.25.0.101 # The miners need to know the IP address later on
 
-  geth-dev-miner-1:
-    hostname: geth-dev-miner-1
+  geth-miner-1:
+    hostname: geth-miner-1
     depends_on: 
       - geth-bootnode
     environment:
@@ -37,8 +37,8 @@ services:
       chainnet:
         ipv4_address: 172.25.0.102 # The monitor needs to know this address
 
-  geth-dev-miner-2:
-    hostname: geth-dev-miner-2
+  geth-miner-2:
+    hostname: geth-miner-2
     depends_on: 
       - geth-bootnode
     environment:
@@ -60,8 +60,8 @@ services:
       chainnet:
         ipv4_address: 172.25.0.104
 
-  geth-dev-miner-3:
-     hostname: geth-dev-miner-3
+  geth-miner-3:
+     hostname: geth-miner-3
      depends_on: 
        - geth-bootnode
      environment:
@@ -86,7 +86,7 @@ services:
   monitoring:
    hostname: monitoring
    depends_on: 
-     - geth-dev-miner-1
+     - geth-miner-3
    build:
      context: ./Monitoring
      dockerfile: Monitoring.Dockerfile
