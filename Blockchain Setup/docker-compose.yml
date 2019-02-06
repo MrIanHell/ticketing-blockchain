@@ -97,6 +97,20 @@ services:
     chainnet:
       ipv4_address: 172.25.0.103
 
+  geth-explorer:
+    hostname: geth-explorer
+    depends_on:
+      - geth-miner-3
+    ports:
+      - 8080:8080
+    build:
+      context: ./Monitoring
+      dockerfile: Explorer.Dockerfile
+    container_name: geth-explorer
+    networks:
+      chainnet:
+        ipv4_address: 172.25.0.125
+
 networks:
   chainnet:
     driver: bridge
