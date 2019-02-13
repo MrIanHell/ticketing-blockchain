@@ -1,14 +1,17 @@
 pragma solidity ^0.4.2;
 
 contract TicketToken{
-	// Basics for smart contract:
-	// Constructor
-	// Set the total number of tokens
-	// Read the total number of tokens
 
-	uint256 public totalSupply; // state variable (variable accessible to the entire contract and written to disk on the blockchain)
+	// state variables (variables accessible to the entire contract and written to disk on the blockchain)
+	string public name = 'Ticket Token'; 
+	string public symbol = 'TCK';
+	string public standard = 'Ticket Token v1.0';
+	uint256 public totalSupply; 
 
-	function TicketToken() public {
-		totalSupply = 1000000;
+	mapping(address => uint256) public balanceOf;
+
+	constructor(uint256 _initialSupply) public { // convention to use underscores for local variables
+		balanceOf[msg.sender] = _initialSupply;
+		totalSupply = _initialSupply;
 	}
 }
