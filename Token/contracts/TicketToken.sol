@@ -32,9 +32,25 @@ contract TicketToken{
 
 
 	function approve(address _spender, uint256 _value) public returns(bool success) {
-		allowance[msg.sender][_spender] = _value; // Update the allowence _spender has from owner
+		allowance[msg.sender][_spender] = _value; // Update the allowance _spender has from owner
 
 		emit Approval(msg.sender, _spender, _value);
+
+		return true;
+	}
+
+
+	function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
+		require(balanceOf[_from] >= _value);
+		require(allowance[_from][msg.sender] >= _value);
+
+		// Update the balances
+		balanceOf[_from] -= _value;
+		balanceOf[_to] += _value;
+
+		allowance[_from][msg.sender] -= _value; // Deducts the sender allowance from value transferred
+
+		emit Transfer(_from, _to, _value);
 
 		return true;
 	}
