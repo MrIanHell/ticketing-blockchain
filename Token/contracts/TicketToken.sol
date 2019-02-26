@@ -2,18 +2,19 @@ pragma solidity ^0.4.2;
 
 contract TicketToken{
 	// state variables (variables accessible to the entire contract and written to disk on the blockchain)
-	string public name = 'Ticket Token'; 
+	string public name; 
 	string public symbol = 'TCK';
 	string public standard = 'Ticket Token v1.0';
 	uint256 public totalSupply;
-	uint256 public faceValue;
+	uint256 public faceValue; // Price in pennies as Solidity doesn't support floating point numbers
 	mapping(address => uint256) public balanceOf;
 	mapping(address => mapping(address => uint256)) public allowance;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-	constructor(uint256 _initialSupply, uint256 _faceValue) public {
+	constructor(string _eventName, uint256 _initialSupply, uint256 _faceValue) public {
+		name = _eventName;
 		balanceOf[msg.sender] = _initialSupply;
 		totalSupply = _initialSupply;
 		faceValue = _faceValue;

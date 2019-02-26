@@ -1,10 +1,13 @@
 const express = require('express')
-const router = express.Router()
+const fs = require('fs')
+const path = require('path')
 const mongoose = require('mongoose')
-
 const Event = require('../models/events')
+const contractFunctions = require('../../contractFunctions')
 
-// Gets all of the events currentlly selling tickets
+const router = express.Router()
+
+// Gets all of the events currently selling tickets
 router.get('/', (req, res, next) => {
 	Event.find().exec().then(docs => {
 		console.log(docs)
@@ -33,22 +36,47 @@ router.get('/:eventId', (req, res, next) => {
 	})
 })
 
-// Creates a new event and saves appropriate information to the database
+// Allows an event organiser to create a new event, save appropriate information to the database and deploy its smart contract
 router.post('/', (req, res, next) => {
-	const event = new Event({
-		_id: new mongoose.Types.ObjectId(),
-		name: req.body.name,
-		contractAddress: req.body.contractAddress,
-		organiserID: req.body.organiserID,
-		organiserAddress: req.body.organiserAddress,
-		totalSupply: req.body.totalSupply
-	})
-	
-	event.save().then(result => {
-		console.log(result)
-		res.status(201).json({
-			message: 'Handling POST requests to /events',
-			createdEvent: event
+	// Initialising variables from request body
+	const eventName = req.body.name + ' Ticket'
+	const organiserAddr = req.body.organiserAddress // need to replace this to lookup from mongo
+	const organiserPrivKey = Buffer.from(process.env.PRIVATE_KEY_1, 'hex') // need to replace this to lookup from mongo
+	const totalSupply = req.body.totalSupply
+	const pennyFaceValue = req.body.faceValue * 100
+
+	// Construct the abi and bytecode from the local TicketToken contract file
+	const jsonFilePath = path.join(__dirname, '..', '..', '..', 'Token', 'build', 'contracts', 'TicketToken.json')
+	const contractJsonContent = fs.readFileSync(jsonFilePath, 'utf8')
+	const jsonOutput = JSON.parse(contractJsonContent)
+	const abi = jsonOutput['abi']
+	const bytecode = jsonOutput['bytecode']
+
+	// Deploy the smart contract
+	contractFunctions.deployContract(organiserAddr, organiserPrivKey, abi, bytecode, [eventName, totalSupply, pennyFaceValue])
+	.then(contract => {
+		console.log(req.body.name + ' event smart contract deployed!')
+
+		const event = new Event({
+			_id: new mongoose.Types.ObjectId(),
+			name: req.body.name,
+			contractAddress: contract.options.address,
+			organiserID: req.body.organiserID,
+			organiserAddress: organiserAddr
+		})
+		
+		// Save event with necessary details to mongoDB
+		event.save().then(result => {
+			console.log(result)
+			res.status(201).json({
+				message: 'POST request created a new event for ' + req.body.name + ' and deployed its smart contract',
+				createdEvent: event
+			})
+		}).catch(err => {
+			console.log(err)
+			res.status(500).json({
+				error: err
+			})
 		})
 	}).catch(err => {
 		console.log(err)
@@ -56,6 +84,7 @@ router.post('/', (req, res, next) => {
 			error: err
 		})
 	})
+
 })
 
 // Allows an event organiser to update an event's details in the database

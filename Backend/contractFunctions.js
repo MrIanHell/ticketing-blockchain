@@ -108,4 +108,7 @@ const run = async () => {
 	await contract.methods.balanceOf(destAccount).call().then(bal => console.log('Second account ticket balance:', bal))
 }
 
-run()
+// run()
+
+module.exports.deployContract = deployContract
+module.exports.transferTickets = transferTickets

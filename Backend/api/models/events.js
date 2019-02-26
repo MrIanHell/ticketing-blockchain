@@ -6,8 +6,7 @@ const eventsSchema = mongoose.Schema({
 	name: String,
 	contractAddress: String,
 	organiserID: Number, // Need to change later to suit a unique id
-	organiserAddress: String,
-	totalSupply: Number
+	organiserAddress: String
 })
 
 module.exports = mongoose.model('Events', eventsSchema)
