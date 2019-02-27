@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 
 const eventRoutes = require('./api/routes/events')
-const orderRoutes = require('./api/routes/orders')
+const ticketRoutes = require('./api/routes/tickets')
 
 mongoose.connect("mongodb://localhost:27017/ticketing", { useNewUrlParser: true })
 
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/events', eventRoutes)
-app.use('/orders', orderRoutes)
+app.use('/tickets', ticketRoutes)
 
 // Error handling from something the client inputs
 app.use((req, res, next) => {

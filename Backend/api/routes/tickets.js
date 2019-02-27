@@ -3,33 +3,33 @@ const router = express.Router()
 
 router.get('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'Orders were fetched!'
+		message: 'Tickets were fetched!'
 	})
 })
 
-router.get('/:orderId', (req, res, next) => {
+router.get('/:ticketId', (req, res, next) => {
 	res.status(201).json({
-		message: 'Order details',
-		orderId: req.params.orderId
+		message: 'Ticket details',
+		ticketId: req.params.ticketId
 	})
 })
 
 router.post('/', (req, res, next) => {
-	const order = {
+	const ticket = {
 		eventID: req.body.eventID,
 		price: req.body.price,
 		quantity: req.body.quantity
 	}
 	res.status(201).json({
-		message: 'Order was created!',
-		createdOrder: order
+		message: 'Ticket was created!',
+		createdTicket: ticket
 	})
 })
 
-router.delete('/:orderId', (req, res, next) => {
+router.delete('/:TicketId', (req, res, next) => {
 	res.status(201).json({
-		message: 'Order was deleted!',
-		orderId: req.params.orderId
+		message: 'Ticket was deleted!',
+		ticketId: req.params.ticketId
 	})
 })
 
