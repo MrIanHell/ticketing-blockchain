@@ -18,10 +18,25 @@ const bytecode = jsonOutput['bytecode']
 
 // Gets all of the events currently selling tickets
 router.get('/', (req, res, next) => {
-	Event.find().exec().then(docs => {
-		console.log(docs)
+	Event.find().select('-__v').exec().then(docs => {
+		const response = {
+			eventsQuantity: docs.length,
+			events: docs.map(doc => {
+				return {
+					_id: doc._id,
+					name: doc.name,
+					contractAddress: doc.contractAddress,
+					organiserID: doc.organiserID,
+					organiserAddress: doc.organiserAddress,
+					request: {
+						type: 'GET',
+						url: req.protocol + '://' + req.get('host') + req.originalUrl + doc._id
+					}
+				}
+			})
+		}
 		if(docs.length > 0) {
-			res.status(200).json(docs)
+			res.status(200).json(response)
 		}
 		else res.status(404).json({ message: 'No entries available' })
 	}).catch(err => {
@@ -30,10 +45,10 @@ router.get('/', (req, res, next) => {
 	})
 })
 
-// Gets a specified event's details
+// Get more details of a specified event
 router.get('/:eventId', (req, res, next) => {
 	const id = req.params.eventId
-	Event.findById(id).exec().then(docObj => {
+	Event.findById(id).select('-__v').exec().then(docObj => {
 		if(!docObj){
 			res.status(404).json({ message: 'No valid entry found for the ID provided' })
 			return
@@ -91,8 +106,18 @@ router.post('/', (req, res, next) => {
 		event.save().then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request created a new event for ' + req.body.name + ' and deployed its smart contract',
-				createdEvent: event
+				message: 'Created a new event for ' + req.body.name + ' and deployed its smart contract',
+				createdEvent: {
+					_id: result._id,
+					name: result.name,
+					contractAddress: result.contractAddress,
+					organiserID: result.organiserID,
+					organiserAddress: result.organiserAddress,
+					request: {
+						type: 'GET',
+						url: req.protocol + '://' + req.get('host') + req.originalUrl + result._id
+					}
+				}
 			})
 		}).catch(err => {
 			console.log(err)
@@ -116,7 +141,13 @@ router.put('/:eventId', (req, res, next) => {
 
 	Event.update({_id: id}, props).exec().then(result => {
 		console.log(result)
-		res.status(200).json(result)
+		res.status(200).json({
+			message: 'Event updated',
+			request: {
+				type: 'GET',
+				url: req.protocol + '://' + req.get('host') + req.originalUrl
+			}
+		})
 	}).catch(err => {
 		console.log(err)
 		res.status(500).json({ error: err })
@@ -127,7 +158,9 @@ router.put('/:eventId', (req, res, next) => {
 router.delete('/:eventId', (req, res, next) => {
 	const id = req.params.eventId
 	Event.remove({ _id: id }).exec().then(result => {
-		res.status(200).json(result)
+		res.status(200).json({
+			message: 'Event deleted'
+		})
 	}).catch(err => {
 		console.log(err)
 		res.status(500).json({ error: err })
