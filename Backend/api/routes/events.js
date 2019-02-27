@@ -2,10 +2,19 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
+const Web3 = require('web3')
 const Event = require('../models/events')
 const contractFunctions = require('../../contractFunctions')
 
 const router = express.Router()
+const web3 = new Web3('http://localhost:8545')
+
+// Construct the ABI and bytecode from the local TicketToken contract file for smart contract use
+const jsonFilePath = path.join(__dirname, '..', '..', '..', 'Token', 'build', 'contracts', 'TicketToken.json')
+const contractJsonContent = fs.readFileSync(jsonFilePath, 'utf8')
+const jsonOutput = JSON.parse(contractJsonContent)
+const abi = jsonOutput['abi']
+const bytecode = jsonOutput['bytecode']
 
 // Gets all of the events currently selling tickets
 router.get('/', (req, res, next) => {
@@ -24,12 +33,32 @@ router.get('/', (req, res, next) => {
 // Gets a specified event's details
 router.get('/:eventId', (req, res, next) => {
 	const id = req.params.eventId
-	Event.findById(id).exec().then(doc => {
-		console.log('From database:', doc)
-		if(doc){
-			res.status(200).json(doc)
+	Event.findById(id).exec().then(docObj => {
+		if(!docObj){
+			res.status(404).json({ message: 'No valid entry found for the ID provided' })
+			return
 		}
-		else res.status(404).json({ message: 'No valid entry found for the ID provided' })
+		const doc = JSON.parse(JSON.stringify(docObj))
+		const contract = new web3.eth.Contract(abi, doc["contractAddress"])
+
+		contract.methods.faceValue().call().then(faceValue => {
+			console.log(faceValue)
+			doc["faceValue"] = faceValue / 100
+			return contract.methods.totalSupply().call()
+		}).then(totalTickets => {
+			doc["totalTickets"] = parseInt(totalTickets)
+			return contract.methods.balanceOf(doc["organiserAddress"]).call()
+		}).then(bal => {
+			const ticketsSold = doc["totalTickets"] - bal
+			doc["ticketsSold"] = ticketsSold
+
+			console.log('From database:', doc)
+			res.status(200).json(doc)
+		}).catch(err => {
+			console.log(err)
+			res.status(500).json({error: err})
+		})
+		
 	}).catch(err => {
 		console.log(err)
 		res.status(500).json({error: err})
@@ -44,13 +73,6 @@ router.post('/', (req, res, next) => {
 	const organiserPrivKey = Buffer.from(process.env.PRIVATE_KEY_1, 'hex') // need to replace this to lookup from mongo
 	const totalSupply = req.body.totalSupply
 	const pennyFaceValue = req.body.faceValue * 100
-
-	// Construct the abi and bytecode from the local TicketToken contract file
-	const jsonFilePath = path.join(__dirname, '..', '..', '..', 'Token', 'build', 'contracts', 'TicketToken.json')
-	const contractJsonContent = fs.readFileSync(jsonFilePath, 'utf8')
-	const jsonOutput = JSON.parse(contractJsonContent)
-	const abi = jsonOutput['abi']
-	const bytecode = jsonOutput['bytecode']
 
 	// Deploy the smart contract
 	contractFunctions.deployContract(organiserAddr, organiserPrivKey, abi, bytecode, [eventName, totalSupply, pennyFaceValue])
