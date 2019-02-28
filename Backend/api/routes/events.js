@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
 const Web3 = require('web3')
-const Event = require('../models/events')
+const Event = require('../models/event')
 const contractFunctions = require('../../contractFunctions')
 
 const router = express.Router()

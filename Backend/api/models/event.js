@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 // This events schema will desribe how our "table" (doc) will be structured
-const eventsSchema = mongoose.Schema({
+const eventSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: { type: String, required: true },
 	contractAddress: { type: String, required: true },
@@ -9,4 +9,4 @@ const eventsSchema = mongoose.Schema({
 	organiserAddress: { type: String, required: true }
 })
 
-module.exports = mongoose.model('Events', eventsSchema)
+module.exports = mongoose.model('Event', eventSchema)

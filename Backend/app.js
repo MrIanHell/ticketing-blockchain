@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 
 const eventRoutes = require('./api/routes/events')
 const ticketRoutes = require('./api/routes/tickets')
+const authRoutes = require('./api/routes/auth')
 
 mongoose.connect("mongodb://localhost:27017/ticketing", { useNewUrlParser: true })
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use('/events', eventRoutes)
 app.use('/tickets', ticketRoutes)
+app.use('/auth', authRoutes)
 
 // Error handling from something the client inputs
 app.use((req, res, next) => {
