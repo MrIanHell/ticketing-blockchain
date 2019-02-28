@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const Web3 = require('web3')
 const Event = require('../models/event')
 const contractFunctions = require('../../contractFunctions')
+const checkAuth = require('../check-auth')
 
 const router = express.Router()
 const web3 = new Web3('http://localhost:8545')
@@ -20,7 +21,7 @@ const bytecode = jsonOutput['bytecode']
 router.get('/', (req, res, next) => {
 	Event.find().select('-__v').exec().then(docs => {
 		const response = {
-			eventsQuantity: docs.length,
+			numberOfEvents: docs.length,
 			events: docs.map(doc => {
 				return {
 					_id: doc._id,
@@ -81,7 +82,7 @@ router.get('/:eventId', (req, res, next) => {
 })
 
 // Allows an event organiser to create a new event, save appropriate information to the database and deploy its smart contract
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
 	// Initialising variables from request body
 	const eventName = req.body.name + ' Ticket'
 	const organiserAddr = req.body.organiserAddress // need to replace this to lookup from mongo
@@ -135,7 +136,7 @@ router.post('/', (req, res, next) => {
 })
 
 // Allows an event organiser to update an event's details in the database
-router.put('/:eventId', (req, res, next) => {
+router.put('/:eventId', checkAuth, (req, res, next) => {
 	const id = req.params.eventId
 	const props = req.body;
 
@@ -155,7 +156,7 @@ router.put('/:eventId', (req, res, next) => {
 })
 
 // Allows an event organiser to cancel and delete an event from the database
-router.delete('/:eventId', (req, res, next) => {
+router.delete('/:eventId', checkAuth, (req, res, next) => {
 	const id = req.params.eventId
 	Event.remove({ _id: id }).exec().then(result => {
 		res.status(200).json({

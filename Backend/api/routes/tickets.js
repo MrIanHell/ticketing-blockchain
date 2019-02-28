@@ -1,20 +1,22 @@
 const express = require('express')
 const router = express.Router()
+const checkAuth = require('../check-auth')
 
-router.get('/', (req, res, next) => {
+
+router.get('/', checkAuth, (req, res, next) => {
 	res.status(200).json({
 		message: 'Tickets were fetched!'
 	})
 })
 
-router.get('/:ticketId', (req, res, next) => {
+router.get('/:ticketId', checkAuth, (req, res, next) => {
 	res.status(201).json({
 		message: 'Ticket details',
 		ticketId: req.params.ticketId
 	})
 })
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
 	const ticket = {
 		eventID: req.body.eventID,
 		price: req.body.price,
@@ -26,7 +28,7 @@ router.post('/', (req, res, next) => {
 	})
 })
 
-router.delete('/:TicketId', (req, res, next) => {
+router.delete('/:TicketId', checkAuth, (req, res, next) => {
 	res.status(201).json({
 		message: 'Ticket was deleted!',
 		ticketId: req.params.ticketId
