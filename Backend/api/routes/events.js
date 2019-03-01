@@ -36,7 +36,7 @@ router.get('/', (req, res, next) => {
 				}
 			})
 		}
-		if(docs.length > 0) {
+		if (docs.length > 0) {
 			res.status(200).json(response)
 		}
 		else res.status(404).json({ message: 'No entries available' })
@@ -50,7 +50,7 @@ router.get('/', (req, res, next) => {
 router.get('/:eventId', (req, res, next) => {
 	const id = req.params.eventId
 	Event.findById(id).select('-__v').exec().then(docObj => {
-		if(!docObj){
+		if (!docObj) {
 			res.status(404).json({ message: 'No valid entry found for the ID provided' })
 			return
 		}
@@ -72,12 +72,12 @@ router.get('/:eventId', (req, res, next) => {
 			res.status(200).json(doc)
 		}).catch(err => {
 			console.log(err)
-			res.status(500).json({error: err})
+			res.status(500).json({ error: err })
 		})
-		
+
 	}).catch(err => {
 		console.log(err)
-		res.status(500).json({error: err})
+		res.status(500).json({ error: err })
 	})
 })
 
@@ -92,33 +92,39 @@ router.post('/', checkAuth, (req, res, next) => {
 
 	// Deploy the smart contract
 	contractFunctions.deployContract(organiserAddr, organiserPrivKey, abi, bytecode, [eventName, totalSupply, pennyFaceValue])
-	.then(contract => {
-		console.log(req.body.name + ' event smart contract deployed!')
+		.then(contract => {
+			console.log(req.body.name + ' event smart contract deployed!')
 
-		const event = new Event({
-			_id: new mongoose.Types.ObjectId(),
-			name: req.body.name,
-			contractAddress: contract.options.address,
-			organiserID: req.body.organiserID,
-			organiserAddress: organiserAddr
-		})
-		
-		// Save event with necessary details to mongoDB
-		event.save().then(result => {
-			console.log(result)
-			res.status(201).json({
-				message: 'Created a new event for ' + req.body.name + ' and deployed its smart contract',
-				createdEvent: {
-					_id: result._id,
-					name: result.name,
-					contractAddress: result.contractAddress,
-					organiserID: result.organiserID,
-					organiserAddress: result.organiserAddress,
-					request: {
-						type: 'GET',
-						url: req.protocol + '://' + req.get('host') + req.originalUrl + result._id
+			const event = new Event({
+				_id: new mongoose.Types.ObjectId(),
+				name: req.body.name,
+				contractAddress: contract.options.address,
+				organiserID: req.body.organiserID,
+				organiserAddress: organiserAddr
+			})
+
+			// Save event with necessary details to mongoDB
+			event.save().then(result => {
+				console.log(result)
+				res.status(201).json({
+					message: 'Created a new event for ' + req.body.name + ' and deployed its smart contract',
+					createdEvent: {
+						_id: result._id,
+						name: result.name,
+						contractAddress: result.contractAddress,
+						organiserID: result.organiserID,
+						organiserAddress: result.organiserAddress,
+						request: {
+							type: 'GET',
+							url: req.protocol + '://' + req.get('host') + req.originalUrl + result._id
+						}
 					}
-				}
+				})
+			}).catch(err => {
+				console.log(err)
+				res.status(500).json({
+					error: err
+				})
 			})
 		}).catch(err => {
 			console.log(err)
@@ -126,12 +132,6 @@ router.post('/', checkAuth, (req, res, next) => {
 				error: err
 			})
 		})
-	}).catch(err => {
-		console.log(err)
-		res.status(500).json({
-			error: err
-		})
-	})
 
 })
 
@@ -140,7 +140,7 @@ router.put('/:eventId', checkAuth, (req, res, next) => {
 	const id = req.params.eventId
 	const props = req.body;
 
-	Event.update({_id: id}, props).exec().then(result => {
+	Event.update({ _id: id }, props).exec().then(result => {
 		console.log(result)
 		res.status(200).json({
 			message: 'Event updated',

@@ -12,11 +12,11 @@ router.post('/signup', (req, res, next) => {
     // Check if a user email exists before creating a new user
     User.findOne({ email: req.body.email }).exec().then(user => {
         // Found a conflict with a current email address stored
-        if (user){
+        if (user) {
             return res.status(409).json({
                 message: 'E-mail already exists'
-            }) 
-        } else{
+            })
+        } else {
             // Hashing the user password with bcrypt to ensure secure storage in mongo
             bcrypt.hash(req.body.password, 10).then(hash => {
                 const user = new User({
@@ -43,18 +43,18 @@ router.post('/signup', (req, res, next) => {
 // Allows a user to login
 router.post('/login', (req, res, next) => {
     User.findOne({ email: req.body.email }).exec().then(user => {
-        if (!user){
+        if (!user) {
             return res.status(401).json({
                 message: 'Authentication failed'
             })
         }
         bcrypt.compare(req.body.password, user.password, (err, result) => {
-            if (!result){
+            if (!result) {
                 return res.status(401).json({
                     message: 'Authentication failed'
                 })
             }
-            if (result){
+            if (result) {
                 const token = jwt.sign({
                     email: user.email,
                     userId: user._id

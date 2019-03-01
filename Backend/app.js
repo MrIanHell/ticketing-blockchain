@@ -13,7 +13,7 @@ mongoose.connect("mongodb://localhost:27017/ticketing", { useNewUrlParser: true 
 app.use(morgan('dev')) // Logs requests from clients sent to the console 
 
 // Parses incoming URL and JSON requests to make them easily readable
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // Esnuring we prevent CORS errors and allow certain headers/methods for the client
@@ -22,8 +22,8 @@ app.use((req, res, next) => {
 	res.header(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-		)
-	if(req.method == 'OPTIONS') {
+	)
+	if (req.method == 'OPTIONS') {
 		res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
 		return res.status(200).json({})
 	}
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
 	res.status(error.status || 500)
 	res.json({
-		error : {
+		error: {
 			message: error.message
 		}
 	})

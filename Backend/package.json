@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend portion of the blockchain ticketing system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrIanHell/ticketing-blockchain.git"
+  },
+  "author": "Ian Hell Escobar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrIanHell/ticketing-blockchain/issues"
+  },
+  "homepage": "https://github.com/MrIanHell/ticketing-blockchain#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "body-parser": "^1.18.3",
+    "ethereumjs-tx": "^1.3.7",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.16",
+    "morgan": "^1.9.1",
+    "web3": "^1.0.0-beta.47"
+  }
+}
