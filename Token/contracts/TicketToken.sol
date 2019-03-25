@@ -21,8 +21,9 @@ contract TicketToken{
 	}
 
 
-	function transfer(address _to, uint256 _value) public returns(bool success) {
+	function transfer(address _to, uint256 _value, uint256 _price) public returns(bool success) {
 		require(balanceOf[msg.sender] >= _value); // Raise exception if account doesn't have sufficient funds
+		require(_price <= faceValue); // Ensure price being bought at is less than or equal to ticket face value
 
 		// Transfer balance
 		balanceOf[msg.sender] -= _value;
