@@ -1,4 +1,4 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.4.22;
 
 contract TicketToken{
 	// state variables (variables accessible to the entire contract and written to disk on the blockchain)
@@ -22,8 +22,8 @@ contract TicketToken{
 
 
 	function transfer(address _to, uint256 _value, uint256 _price) public returns(bool success) {
-		require(balanceOf[msg.sender] >= _value); // Raise exception if account doesn't have sufficient funds
-		require(_price <= faceValue); // Ensure price being bought at is less than or equal to ticket face value
+		require(balanceOf[msg.sender] >= _value, "Sender does not have enough tickets."); // Raise exception if account doesn't have sufficient funds
+		require(_price <= faceValue, "Price that the ticket is being bought at is higher than its face value.");
 
 		// Transfer balance
 		balanceOf[msg.sender] -= _value;

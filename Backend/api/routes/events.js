@@ -67,8 +67,6 @@ router.get('/:eventId', (req, res, next) => {
 		}).then(bal => {
 			const ticketsSold = doc["totalTickets"] - bal
 			doc["ticketsSold"] = ticketsSold
-
-			console.log('From database:', doc)
 			res.status(200).json(doc)
 		}).catch(err => {
 			console.log(err)

@@ -2,10 +2,12 @@ const express = require('express')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+var Web3 = require('web3')
 const User = require('../models/user')
 const checkAuth = require('../check-auth')
 
 const router = express.Router()
+const web3 = new Web3('http://localhost:8545')
 
 // Allows the user to sign-up to the web application
 router.post('/signup', (req, res, next) => {
@@ -17,12 +19,16 @@ router.post('/signup', (req, res, next) => {
                 message: 'E-mail already exists'
             })
         } else {
+            var ethAccount = web3.eth.accounts.create() // Generate an Ethereum account for the user
+
             // Hashing the user password with bcrypt to ensure secure storage in mongo
             bcrypt.hash(req.body.password, 10).then(hash => {
                 const user = new User({
                     _id: new mongoose.Types.ObjectId(),
                     email: req.body.email,
-                    password: hash
+                    password: hash,
+                    accAddress: ethAccount.address,
+                    accPrivKey: ethAccount.privateKey
                 })
 
                 return user.save()
@@ -57,7 +63,8 @@ router.post('/login', (req, res, next) => {
             if (result) {
                 const token = jwt.sign({
                     email: user.email,
-                    userId: user._id
+                    userId: user._id,
+                    accAddress: user.accAddress
                 }, process.env.JWT_KEY, { expiresIn: "12h" })
                 return res.status(200).json({
                     message: 'Authentication was successful',
