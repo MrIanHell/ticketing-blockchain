@@ -5,7 +5,7 @@ const eventSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: { type: String, required: true },
 	contractAddress: { type: String, required: true },
-	organiserID: { type: Number, required: true }, // Need to change later to suit a unique id
+	organiserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 	organiserAddress: { type: String, required: true }
 })
 

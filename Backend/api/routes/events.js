@@ -31,7 +31,7 @@ router.get('/', (req, res, next) => {
 					organiserAddress: doc.organiserAddress,
 					request: {
 						type: 'GET',
-						url: req.protocol + '://' + req.get('host') + req.originalUrl + doc._id
+						url: req.protocol + '://' + req.get('host') + '/events/' + doc._id
 					}
 				}
 			})
@@ -90,6 +90,15 @@ router.post('/', checkAuth, (req, res, next) => {
 	const totalSupply = req.body.totalSupply
 	const pennyFaceValue = req.body.faceValue * 100
 
+	// Validation check
+	if (!eventName || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue) {
+		res.status(400).json({
+			error: "Please ensure you have sent all arguments in the body these are: "
+				+ "name, organiserAddress, totalSupply, faceValue"
+		})
+		return
+	}
+
 	// Deploy the smart contract
 	contractFunctions.deployContract(organiserAddr, organiserPrivKey, abi, bytecode, [eventName, totalSupply, pennyFaceValue])
 		.then(contract => {
@@ -99,7 +108,7 @@ router.post('/', checkAuth, (req, res, next) => {
 				_id: new mongoose.Types.ObjectId(),
 				name: req.body.name,
 				contractAddress: contract.options.address,
-				organiserID: req.body.organiserID,
+				organiserID: req.userData.userId, // Pull user ID from returned checkAuth response object
 				organiserAddress: organiserAddr
 			})
 
@@ -116,7 +125,7 @@ router.post('/', checkAuth, (req, res, next) => {
 						organiserAddress: result.organiserAddress,
 						request: {
 							type: 'GET',
-							url: req.protocol + '://' + req.get('host') + req.originalUrl + result._id
+							url: req.protocol + '://' + req.get('host') + '/events/' + result._id
 						}
 					}
 				})
