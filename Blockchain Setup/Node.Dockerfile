@@ -8,6 +8,8 @@ RUN apt-get update \
 
 WORKDIR "/opt"
 ADD ./genesis.json ./genesis.json
+ADD ./start.sh ./start.sh
+RUN chmod +x ./start.sh
 RUN geth init genesis.json
 
 ARG password
@@ -23,4 +25,4 @@ ENV bootnodeIp=""
 EXPOSE 8545
 EXPOSE 30303
 
-CMD exec geth --bootnodes "enode://$bootnodeId@$bootnodeIp:30301" --networkid="500" --verbosity=4 --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" --syncmode=full --mine --gasprice "0" --etherbase $address --unlock $address --password ~/.accountpassword
+ENTRYPOINT ./start.sh
