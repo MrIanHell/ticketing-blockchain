@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.set('useCreateIndex', true)
 
-// This events schema will desribe how our "table" (doc) will be structured
+// This user schema will describe how our "table" (doc) will be structured
 const userSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     email: {

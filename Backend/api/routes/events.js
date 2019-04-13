@@ -107,7 +107,7 @@ router.post('/', checkAuth, async (req, res, next) => {
 	// Validation check to ensure required fields are present in the body request
 	if (!eventName || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue || !date) {
 		res.status(400).json({
-			error: "Please ensure you have sent all arguments in the body these are: "
+			error: "Please ensure you have sent all required arguments in the body these are: "
 				+ "name, organiserAddress, totalSupply, faceValue, date"
 		})
 		return

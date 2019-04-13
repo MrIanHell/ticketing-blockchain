@@ -2,8 +2,10 @@ const express = require('express')
 const path = require('path')
 const fs = require('fs')
 const Web3 = require('web3')
+const mongoose = require('mongoose')
 const Event = require('../models/event')
 const User = require('../models/user')
+const TicketListing = require('../models/ticketListing')
 const checkAuth = require('../check-auth')
 const contractFunctions = require('../../contractFunctions')
 
@@ -88,15 +90,76 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 })
 
 // Sell ticket(s) for user who sent the request
-router.post('/sell', checkAuth, (req, res, next) => {
-	const ticket = {
-		eventID: req.body.eventID,
-		price: req.body.price,
-		quantity: req.body.quantity
+router.post('/sellListing', checkAuth, async (req, res, next) => {
+	const eventID = req.body.eventID
+	const sellPrice = req.body.sellPrice
+	const quantity = req.body.quantity
+	const sellerAddr = req.userData.accAddress
+	const eventObj = await Event.findById(eventID).select('-__v').exec() // Fetch event details
+	const eventDoc = JSON.parse(JSON.stringify(eventObj))
+
+	// Validation check to ensure required fields are present in the body request
+	if (!eventID || !sellPrice || !quantity) {
+		res.status(400).json({
+			error: "Please ensure you have sent all required arguments in the body these are: "
+				+ "eventID, sellPrice, quantity"
+		})
+		return
 	}
-	res.status(201).json({
-		message: 'Ticket was sold!',
-		createdTicket: ticket
+
+	// Check the event exists
+	if (!eventObj) {
+		res.status(404).json({ message: 'No valid entry found for the ID provided' })
+		return
+	}
+	
+	// Check if the seller owns enough tickets for requested amount to be sold
+	const contract = new web3.eth.Contract(abi, eventDoc['contractAddress'])
+	const ticketsOwned = await contract.methods.balanceOf(sellerAddr).call()
+	if (ticketsOwned < quantity) {
+		res.status(403).json({ message: 'Cannot create sell listing as user does not own ' + quantity + ' ticket(s)' })
+		return
+	}
+
+	// Ensure that proposed sale price isn't higher than the ticket's face value
+	const faceValue = await contract.methods.faceValue().call()
+	if (sellPrice * 100 > faceValue) {
+		res.status(403).json({ message: 'Cannot create sell listing as the sell price is higher than the ticket\'s face value' })
+		return
+	}
+
+	const ticketListing = new TicketListing({
+		_id: new mongoose.Types.ObjectId(),
+		eventID: eventID,
+		contractAddress: eventDoc['contractAddress'],
+		sellPrice: sellPrice,
+		sellerID: req.userData.userId,
+		sellerAddress: req.userData.accAddress
+	})
+
+	// Save sell listing with necessary details to mongoDB
+	ticketListing.save().then(result => {
+		console.log(result)
+		res.status(201).json({
+			message: 'Created a sell listing for ' + eventDoc['name'] + ' for the user ' + req.userData.email,
+			createdEvent: {
+				_id: result._id,
+				eventID: result.eventID,
+				contractAddress: result.contractAddress,
+				sellPrice: result.sellPrice,
+				sellerID: result.sellerID,
+				sellerAddress: result.sellerAddress,
+				request: {
+					type: 'GET',
+					url: req.protocol + '://' + req.get('host') + '/sellListing/' + result._id
+				}
+			}
+		})
+	}).catch(err => {
+		console.log(err)
+		res.status(500).json({
+			error: err.toString()
+		})
 	})
 })
 

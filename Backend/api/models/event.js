@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-// This events schema will desribe how our "table" (doc) will be structured
+// This event schema will describe how our "table" (doc) will be structured
 const eventSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: { type: String, required: true },
