@@ -4,6 +4,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const Web3 = require('web3')
 const Event = require('../models/event')
+const User = require('../models/user')
 const contractFunctions = require('../../contractFunctions')
 const checkAuth = require('../check-auth')
 
@@ -42,7 +43,7 @@ router.get('/', (req, res, next) => {
 		else res.status(404).json({ message: 'No entries available' })
 	}).catch(err => {
 		console.log(err)
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err.toString() })
 	})
 })
 
@@ -70,21 +71,25 @@ router.get('/:eventId', (req, res, next) => {
 			res.status(200).json(doc)
 		}).catch(err => {
 			console.log(err)
-			res.status(500).json({ error: err })
+			res.status(500).json({ error: err.toString() })
 		})
 
 	}).catch(err => {
 		console.log(err)
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err.toString() })
 	})
 })
 
 // Allows an event organiser to create a new event, save appropriate information to the database and deploy its smart contract
-router.post('/', checkAuth, (req, res, next) => {
+router.post('/', checkAuth, async (req, res, next) => {
+	// Fetch organiser details from mongo using the header's user data
+	const userObj = await User.findById(req.userData.userId).select('-__v').exec()
+	const userDoc = JSON.parse(JSON.stringify(userObj))
+
 	// Initialising variables from request body
 	const eventName = req.body.name + ' Ticket'
-	const organiserAddr = req.body.organiserAddress // need to replace this to lookup from mongo
-	const organiserPrivKey = Buffer.from(process.env.PRIVATE_KEY_1, 'hex') // need to replace this to lookup from mongo
+	const organiserAddr = userDoc['accAddress']
+	const organiserPrivKey = Buffer.from(userDoc['accPrivKey'], 'hex')
 	const totalSupply = req.body.totalSupply
 	const pennyFaceValue = req.body.faceValue * 100
 
@@ -130,13 +135,13 @@ router.post('/', checkAuth, (req, res, next) => {
 			}).catch(err => {
 				console.log(err)
 				res.status(500).json({
-					error: err
+					error: err.toString()
 				})
 			})
 		}).catch(err => {
 			console.log(err)
 			res.status(500).json({
-				error: err
+				error: err.toString()
 			})
 		})
 
@@ -158,7 +163,7 @@ router.put('/:eventId', checkAuth, (req, res, next) => {
 		})
 	}).catch(err => {
 		console.log(err)
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err.toString() })
 	})
 })
 
@@ -171,7 +176,7 @@ router.delete('/:eventId', checkAuth, (req, res, next) => {
 		})
 	}).catch(err => {
 		console.log(err)
-		res.status(500).json({ error: err })
+		res.status(500).json({ error: err.toString() })
 	})
 })
 

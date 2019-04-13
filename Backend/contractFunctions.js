@@ -86,6 +86,44 @@ async function transferTickets(sourceAcc, destAcc, sourcePrivKey, quantity, pric
 	return web3.eth.sendSignedTransaction(raw)
 }
 
+/**
+ * Creates an Ethereum account wallet and funds it with a specified amount of
+ * Ether from the miner's account.
+ * 
+ * Argument:
+ *  ethAmount -- Amount of Ether to fill the new account with
+ *
+ * Returns: The public and private key of the newly created account
+ */
+async function createPrefundedAccount(ethAmount) {
+	const adminAddr1 = '0x3590aca93338b0721966a8d0c96ebf2c4c87c544'
+	const adminAddr2 = '0x8cc5a1a0802db41db826c2fcb72423744338dcb0'
+	const privateKey = Buffer.from(process.env.PRIVATE_KEY_1, 'hex')
+	const ethAccount = web3.eth.accounts.create()
+	
+	const txCount = await web3.eth.getTransactionCount(adminAddr1)
+
+	// Build transaction object
+	const txObject = {
+		nonce: web3.utils.toHex(txCount),
+		gasLimit: web3.utils.toHex(3000000),
+		gasPrice: web3.utils.toHex(2 * 1e9),
+		to: ethAccount.address,
+		value: 1000000000000000000 * ethAmount
+	}
+
+	// Sign the object
+	const tx = new Tx(txObject) // transaction object
+	tx.sign(privateKey)
+	const serialisedTx = tx.serialize()
+	const raw = '0x' + serialisedTx.toString('hex')
+
+	// Broadcast the transaction
+	await web3.eth.sendSignedTransaction(raw)
+
+	return [ethAccount.address, ethAccount.privateKey]
+}
+
 
 // Testing and debugging
 const adminAccount = '0x3590aca93338b0721966a8d0c96ebf2c4c87c544'
@@ -97,7 +135,7 @@ const jsonOutput = JSON.parse(contractJsonContent)
 const contractAbi = jsonOutput['abi']
 const data = jsonOutput['bytecode']
 
-const run = async () => {
+const runTests = async () => {
 	console.log('Deploying smart contract...')
 	const contract = await deployContract(adminAccount, privateKey, contractAbi, data, ["Test Event", 40, 1250])
 	const contractAddress = contract.options.address
@@ -109,7 +147,7 @@ const run = async () => {
 	await contract.methods.balanceOf(destAccount).call().then(bal => console.log('Second account ticket balance:', bal))
 
 	console.log('\nTransferring tickets...')
-	const receipt = await transferTickets(adminAccount, destAccount, privateKey, 1, 1250, contract).then(tx => {
+	const receipt = await transferTickets(adminAccount, destAccount, privateKey, 2, 2500, contract).then(tx => {
 		console.log(tx)
 	}).catch(error => {
 		console.log('-----TRANSACTION ERROR-----')
@@ -118,9 +156,12 @@ const run = async () => {
 	console.log('Transfer complete!\n')
 	await contract.methods.balanceOf(adminAccount).call().then(bal => console.log('Admin ticket balance:', bal))
 	await contract.methods.balanceOf(destAccount).call().then(bal => console.log('Second account ticket balance:', bal))
+	const account = await createPrefundedAccount(100)
+	console.log(account)
 }
 
-// run()
+// runTests()
 
 module.exports.deployContract = deployContract
 module.exports.transferTickets = transferTickets
+module.exports.createPrefundedAccount = createPrefundedAccount

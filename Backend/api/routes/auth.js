@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 var Web3 = require('web3')
 const User = require('../models/user')
 const checkAuth = require('../check-auth')
+const contractFunctions = require('../../contractFunctions')
 
 const router = express.Router()
 const web3 = new Web3('http://localhost:8545')
@@ -18,28 +19,29 @@ router.post('/signup', (req, res, next) => {
             return res.status(409).json({
                 message: 'E-mail already exists'
             })
-        } else {
-            var ethAccount = web3.eth.accounts.create() // Generate an Ethereum account for the user
+        }
+        // Sign the user up and generate a prefunded Ethereum account for them
+        else {
+            contractFunctions.createPrefundedAccount(100).then(ethAccount => { 
 
-            // Hashing the user password with bcrypt to ensure secure storage in mongo
-            bcrypt.hash(req.body.password, 10).then(hash => {
-                const user = new User({
-                    _id: new mongoose.Types.ObjectId(),
-                    email: req.body.email,
-                    password: hash,
-                    accAddress: ethAccount.address,
-                    accPrivKey: ethAccount.privateKey
-                })
-
-                return user.save()
-            }).then(result => {
-                console.log(result)
-                res.status(201).json({
-                    message: 'User created'
-                })
-            }).catch(err => {
-                res.status(500).json({
-                    error: err
+                // Hashing the user password with bcrypt to ensure secure storage in mongo
+                bcrypt.hash(req.body.password, 10).then(hash => {
+                    const user = new User({
+                        _id: new mongoose.Types.ObjectId(),
+                        email: req.body.email,
+                        password: hash,
+                        accAddress: ethAccount[0],
+                        accPrivKey: ethAccount[1].slice(2)
+                    })
+                    return user.save()
+                }).then(result => {
+                    res.status(201).json({
+                        message: 'User created'
+                    })
+                }).catch(err => {
+                    res.status(500).json({
+                        error: err.toString()
+                    })
                 })
             })
         }
@@ -76,7 +78,7 @@ router.post('/login', (req, res, next) => {
     }).catch(err => {
         console.log(err)
         res.status(500).json({
-            error: err
+            error: err.toString()
         })
     })
 })
@@ -90,7 +92,7 @@ router.delete('/:userId', checkAuth, (req, res, next) => {
     }).catch(err => {
         console.log(err)
         res.status(500).json({
-            error: err
+            error: err.toString()
         })
     })
 })
