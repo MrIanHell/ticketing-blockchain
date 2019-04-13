@@ -23,7 +23,7 @@ contract TicketToken{
 
 	function transfer(address _to, uint256 _value, uint256 _price) public returns(bool success) {
 		require(balanceOf[msg.sender] >= _value, "Sender does not have enough tickets."); // Raise exception if account doesn't have sufficient funds
-		require(_price <= faceValue, "Price that the ticket is being bought at is higher than its face value.");
+		require(_price <= faceValue * _value, "Price that the ticket is being bought at is higher than its face value."); // Logic to realise maximum price cap of ticket
 
 		// Transfer balance
 		balanceOf[msg.sender] -= _value;
