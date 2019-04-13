@@ -7,7 +7,6 @@ const User = require('../models/user')
 const checkAuth = require('../check-auth')
 const contractFunctions = require('../../contractFunctions')
 
-
 const router = express.Router()
 const web3 = new Web3('http://localhost:8545')
 
@@ -18,18 +17,26 @@ const jsonOutput = JSON.parse(contractJsonContent)
 const abi = jsonOutput['abi']
 
 
-// Get all tickets
-router.get('/', checkAuth, (req, res, next) => {
-	res.status(200).json({
-		message: 'Tickets were fetched!'
-	})
-})
-
 // Get tickets held by a specific user
-router.get('/:ownerId', checkAuth, (req, res, next) => {
+router.get('/', checkAuth, async (req, res, next) => {
+	const eventDocs = await Event.find().select('-__v').exec()
+	let ticketsOwned = []
+
+	// Search through all events and find tickets that the user owns
+	for (let doc of eventDocs){
+		let contract = new web3.eth.Contract(abi, doc['contractAddress'])
+		let ticketQty = await contract.methods.balanceOf(req.userData.accAddress).call()
+		if (ticketQty > 0) {
+			ticketsOwned.push({
+				eventID: doc['_id'],
+				eventName: doc['name'],
+				quantityOwned: ticketQty
+			})
+		}
+	}
 	res.status(201).json({
-		message: 'Ticket details',
-		ticketId: req.params.ticketId
+		message: 'Tickets owned by ' + req.userData.email,
+		tickets: ticketsOwned
 	})
 })
 
@@ -63,16 +70,14 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 	const organiserPrivKey = Buffer.from(JSON.parse(JSON.stringify(userObj))['accPrivKey'], 'hex')
 	const consumerAddr = req.userData.accAddress
 
-	const ticketPrice = await contract.methods.faceValue().call() // Get face value of ticket
-	console.log(organiserPrivKey)
 	// Transfer the tickets requested
+	const ticketPrice = await contract.methods.faceValue().call() * quantity// Get face value of ticket
 	console.log('Transferring ' + quantity + ' ticket(s) for the event \"' + eventDoc['name'] + '\"...')
 	contractFunctions.transferTickets(organsierAddr, consumerAddr,
 		organiserPrivKey, quantity, ticketPrice, contract).then(txReceipt => {
 			console.log('Transfer complete!')
-			console.log(txReceipt)
 			res.status(201).json({
-				message: 'Ticket for \"' + eventDoc['name'] + '\" was bought!'
+				message: 'User (' + req.userData.email + ') has successfully bought ticket(s) for \"' + eventDoc['name'] + '\"!'
 			})
 		}).catch(err => {
 			console.log(err)
