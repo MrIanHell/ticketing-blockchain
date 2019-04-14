@@ -5,6 +5,7 @@ const ticketListingSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	eventID: { type: String, ref: 'Event', required: true },
 	contractAddress: { type: String, required: true },
+	quantity: { type: Number, required: true },
 	sellPrice: { type: Number, required: true },
 	sellerID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 	sellerAddress: { type: String, required: true }

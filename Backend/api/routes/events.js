@@ -181,16 +181,31 @@ router.put('/:eventId', checkAuth, (req, res, next) => {
 })
 
 // Allows an event organiser to cancel and delete an event from the database
-router.delete('/:eventId', checkAuth, (req, res, next) => {
-	const id = req.params.eventId
-	Event.remove({ _id: id }).exec().then(result => {
+router.delete('/:eventId', checkAuth, async (req, res, next) => {
+	try {
+		const id = req.params.eventId
+
+		// Check the listing exists and that the user that is deleting the listing owns it
+		const doc = await Event.findById(id).exec()
+		if (!doc) {
+			res.status(404).json({ message: 'No valid entry found for the ID provided' })
+			return
+		}
+		if (doc['organiserID'].toString() !== req.userData.userId) {
+			res.status(401).json({ message: 'User is not authorised to delete this event as they did not create it' })
+			return
+		}
+
+		// Remove listing from the database
+		await Event.remove({ _id: id }).exec()
 		res.status(200).json({
 			message: 'Event deleted'
 		})
-	}).catch(err => {
+
+	} catch (err) {
 		console.log(err)
 		res.status(500).json({ error: err.toString() })
-	})
+	}
 })
 
 module.exports = router

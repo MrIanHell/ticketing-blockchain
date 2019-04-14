@@ -10,7 +10,7 @@ curl -d '{"email":"user5@gmail.com", "password":"user5"}' -H "Content-Type: appl
 echo "\n\n------GENERATING JWTs------\n"
 auth1=$(curl -d '{"email":"user1@gmail.com", "password":"user1"}' -H "Content-Type: application/json" -k -X POST http://localhost:5000/auth/login)
 echo $(echo $auth1 | tr -d '"')
-jwtToken='a eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXI1QGdtYWlsLmNvbSIsInVzZXJJZCI6IjVjYjIyN2Y3ZDZmNTUwMzVkZjExMmQ5ZSIsImFjY0FkZHJlc3MiOiIweGY0MDc5MmFEMUI3NzJGQmQ1MjE5Qjk3OTBiRjIzYTRkRmFGYTkyNTYiLCJpYXQiOjE1NTUxNzk2MTYsImV4cCI6MTU1NTIyMjgxNn0.O-HQ8EtAN6BcMX7A2OQh8gNAOyVjiqd6-JEMhUabzz0'
+jwtToken='a eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInVzZXJJZCI6IjVjYjMyNjY2Y2NiNjY3NWNhOTA3OTFmZCIsImFjY0FkZHJlc3MiOiIweGIyNmEwMWU1QUY2ODFERTQ0YzBCOEI5RTBiZERCZWNhNGMwNDQzRDgiLCJpYXQiOjE1NTUyNDQ2NjIsImV4cCI6MTU1NTI4Nzg2Mn0.WexL9tDPtj2Qkz4-BIRJwkROwQ_OImTUYVdSCmBDO58'
 
 # CREATING EVENTS
 echo "\n------CREATING EVENTS------\n"
