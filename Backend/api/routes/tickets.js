@@ -54,9 +54,18 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 	try {
 		const eventID = req.body.eventID
 		const quantity = req.body.quantity
-		const eventObj = await Event.findById(eventID).select('-__v').exec() // Fetch event details
+
+		// Validation check to ensure required fields are present in the body request
+		if (!eventID || !quantity) {
+			res.status(400).json({
+				error: "Please ensure you have sent all required arguments in the body these are: "
+					+ "eventID, quantity"
+			})
+			return
+		}
 
 		// Check the event exists
+		const eventObj = await Event.findById(eventID).select('-__v').exec()
 		if (!eventObj) {
 			res.status(404).json({ message: 'No valid entry found for the ID provided' })
 			return
@@ -234,6 +243,14 @@ router.get('/sellListings', (req, res, next) => {
 router.get('/sellListings/:listingId', (req, res, next) => {
 	const id = req.params.listingId
 
+	// Validation check for id entered in the URL
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		res.status(400).json({
+			message: 'ID entered in URL is not a valid listing ID'
+		})
+		return
+	}
+
 	TicketListing.findById(id).select('-__v').exec().then(result => {
 		const response = {
 			_id: result._id,
@@ -273,7 +290,7 @@ router.delete('/sellListings/:listingId', checkAuth, async (req, res, next) => {
 		}
 
 		// Remove listing from the database
-		await TicketListing.remove({ _id: id }).exec()
+		await TicketListing.deleteOne({ _id: id }).exec()
 		res.status(200).json({
 			message: 'Listing deleted'
 		})
@@ -286,5 +303,74 @@ router.delete('/sellListings/:listingId', checkAuth, async (req, res, next) => {
 	}
 })
 
+
+// Buy ticket(s) from seller listing for user who sent the request
+router.post('/sellListings/buy', checkAuth, async (req, res, next) => {
+	try {
+		const listingID = req.body.listingID
+		const quantity = req.body.quantity
+		console.log(listingID)
+		// Validation check to ensure required fields are present in the body request
+		if (!listingID || !quantity) {
+			res.status(400).json({
+				error: "Please ensure you have sent all required arguments in the body these are: "
+					+ "listingID, quantity"
+			})
+			return
+		}
+
+		// Check the event exists
+		const listingObj = await TicketListing.findById(listingID).select('-__v').exec()
+		if (!listingObj) {
+			res.status(404).json({ message: 'No valid listing found for the ID provided' })
+			return
+		}
+
+		const listingDoc = JSON.parse(JSON.stringify(listingObj))
+		const contract = new web3.eth.Contract(abi, listingDoc['contractAddress'])
+		const sellerAddr = listingDoc['sellerAddress']
+		const remainingTickets = await contract.methods.balanceOf(sellerAddr).call()
+
+		// Check seller owns enough tickets to sell for quantity requested
+		if (remainingTickets < quantity || listingDoc['quantity'] < quantity) {
+			res.status(400).json({
+				message: 'Ticket quantity requested is more than the seller or listing has'
+			})
+			return
+		}
+
+		// Fetch public and private keys of buyer and seller for transfer of tickets
+		const userObj = await User.findById(listingDoc['sellerID']).select('-__v').exec()
+		const sellerPrivKey = Buffer.from(JSON.parse(JSON.stringify(userObj))['accPrivKey'], 'hex')
+		const buyerAddr = req.userData.accAddress
+
+		// Transfer the tickets requested
+		const ticketPrice = listingDoc['sellPrice'] * quantity // Get price of ticket
+		console.log('Transferring ' + quantity + ' ticket(s) for the event...')
+		try {
+			await contractFunctions.transferTickets(sellerAddr, buyerAddr,
+				sellerPrivKey, quantity, ticketPrice, contract)
+		} catch (err) {
+			console.log(err)
+			res.status(500).json({ error: err.toString() })
+		}
+		console.log('Transfer complete!')
+
+		// Calculate new quantity of tickets left on listing and take appropriate action
+		const newQuantity = listingDoc['quantity'] - quantity
+		if (newQuantity == 0) await TicketListing.deleteOne({ _id: listingID }).exec()
+		else await TicketListing.updateOne({ _id: listingID }, { quantity: newQuantity }).exec()
+
+		res.status(201).json({
+			message: 'User (' + req.userData.email + ') has successfully bought ticket(s) from the seller!'
+		})
+
+	} catch (err) {
+		console.log(err.toString())
+		res.status(500).json({
+			error: 'Internal Server Error'
+		})
+	}
+})
 
 module.exports = router

@@ -51,6 +51,15 @@ router.get('/', (req, res, next) => {
 // Get more details of a specified event
 router.get('/:eventId', (req, res, next) => {
 	const id = req.params.eventId
+
+	// Validation check for id entered in the URL
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		res.status(400).json({
+			message: 'ID entered in URL is not a valid listing ID'
+		})
+		return
+	}
+
 	Event.findById(id).select('-__v').exec().then(docObj => {
 		if (!docObj) {
 			res.status(404).json({ message: 'No valid entry found for the ID provided' })
@@ -197,7 +206,7 @@ router.delete('/:eventId', checkAuth, async (req, res, next) => {
 		}
 
 		// Remove listing from the database
-		await Event.remove({ _id: id }).exec()
+		await Event.deleteOne({ _id: id }).exec()
 		res.status(200).json({
 			message: 'Event deleted'
 		})
