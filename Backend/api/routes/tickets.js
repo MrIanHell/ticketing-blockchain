@@ -184,9 +184,9 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 				}
 			})
 		}).catch(err => {
-			console.log(err)
+			console.log(err.toString())
 			res.status(500).json({
-				error: err.toString()
+				error: 'Internal Server Error'
 			})
 		})
 	} catch (err) {
@@ -197,7 +197,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 	}
 })
 
-// Gets all of of the sell listings
+// Gets all of the sell listings
 router.get('/sellListings', (req, res, next) => {
 	TicketListing.find().select('-__v').exec().then(docs => {
 		const response = {
@@ -213,7 +213,7 @@ router.get('/sellListings', (req, res, next) => {
 					sellerAddress: doc.sellerAddress,
 					request: {
 						type: 'GET',
-						url: req.protocol + '://' + req.get('host') + '/sellListings/' + doc._id
+						url: req.protocol + '://' + req.get('host') + '/tickets/sellListings/' + doc._id
 					}
 				}
 			})
@@ -223,8 +223,36 @@ router.get('/sellListings', (req, res, next) => {
 		}
 		else res.status(404).json({ message: 'No entries available' })
 	}).catch(err => {
-		console.log(err)
-		res.status(500).json({ error: err.toString() })
+		console.log(err.toString())
+		res.status(500).json({
+			error: 'Internal Server Error'
+		})
+	})
+})
+
+// Get a specific sell listing
+router.get('/sellListings/:listingId', (req, res, next) => {
+	const id = req.params.listingId
+
+	TicketListing.findById(id).select('-__v').exec().then(result => {
+		const response = {
+			_id: result._id,
+			eventID: result.eventID,
+			contractAddress: result.contractAddress,
+			quantity: result.quantity,
+			sellPrice: result.sellPrice,
+			sellerID: result.sellerID,
+			sellerAddress: result.sellerAddress
+		}
+		if (result) {
+			res.status(200).json(response)
+		}
+		else res.status(404).json({ message: 'No valid entry found for the ID provided' })
+	}).catch(err => {
+		console.log(err.toString())
+		res.status(500).json({
+			error: 'Internal Server Error'
+		})
 	})
 })
 
@@ -251,8 +279,10 @@ router.delete('/sellListings/:listingId', checkAuth, async (req, res, next) => {
 		})
 
 	} catch (err) {
-		console.log(err)
-		res.status(500).json({ error: err.toString() })
+		console.log(err.toString())
+		res.status(500).json({
+			error: 'Internal Server Error'
+		})
 	}
 })
 
