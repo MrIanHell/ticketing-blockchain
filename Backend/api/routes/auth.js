@@ -12,6 +12,16 @@ const web3 = new Web3('http://localhost:8545')
 
 // Allows the user to sign-up to the web application
 router.post('/signup', (req, res, next) => {
+
+    // Validation check to ensure required fields are present in the body request
+    if (!req.body.email || !req.body.password) {
+        res.status(400).json({
+            error: "Please ensure you have sent all required arguments in the body these are: "
+                + "email, password"
+        })
+        return
+    }
+
     // Check if a user email exists before creating a new user
     User.findOne({ email: req.body.email }).exec().then(user => {
         // Found a conflict with a current email address stored
@@ -22,7 +32,7 @@ router.post('/signup', (req, res, next) => {
         }
         // Sign the user up and generate a prefunded Ethereum account for them
         else {
-            contractFunctions.createPrefundedAccount(100).then(ethAccount => { 
+            contractFunctions.createPrefundedAccount(100).then(ethAccount => {
 
                 // Hashing the user password with bcrypt to ensure secure storage in mongo
                 bcrypt.hash(req.body.password, 10).then(hash => {
@@ -39,12 +49,23 @@ router.post('/signup', (req, res, next) => {
                         message: 'User created'
                     })
                 }).catch(err => {
+                    console.log(err)
                     res.status(500).json({
                         error: err.toString()
                     })
                 })
+            }).catch(err => {
+                console.log(err)
+                res.status(500).json({
+                    error: err.toString()
+                })
             })
         }
+    }).catch(err => {
+        console.log(err)
+        res.status(500).json({
+            error: err.toString()
+        })
     })
 })
 
@@ -84,8 +105,8 @@ router.post('/login', (req, res, next) => {
 })
 
 // Allows for a user to delete their account
-router.delete('/:userId', checkAuth, (req, res, next) => {
-    User.deleteOne({ _id: req.params.userId }).exec().then(result => {
+router.delete('/', checkAuth, (req, res, next) => {
+    User.deleteOne({ _id: req.userData.userId }).exec().then(result => {
         res.status(200).json({
             message: 'User deleted'
         })

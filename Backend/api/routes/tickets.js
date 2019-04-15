@@ -188,7 +188,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 					sellerAddress: result.sellerAddress,
 					request: {
 						type: 'GET',
-						url: req.protocol + '://' + req.get('host') + '/sellListing/' + result._id
+						url: req.protocol + '://' + req.get('host') + '/tickets/sellListings/' + result._id
 					}
 				}
 			})

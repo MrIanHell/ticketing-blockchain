@@ -104,20 +104,20 @@ router.post('/', checkAuth, async (req, res, next) => {
 	const totalSupply = req.body.totalSupply
 	const pennyFaceValue = req.body.faceValue * 100
 
+	// Validation check to ensure required fields are present in the body request
+	if (!eventName || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue || !date) {
+		res.status(400).json({
+			error: "Please ensure you have sent all required arguments in the body these are: "
+				+ "name, totalSupply, faceValue, date"
+		})
+		return
+	}
+
 	// Validate that the date is in the correct format
 	const dateRegex = new RegExp("(19|20)[0-9][0-9]-(0[0-9]|1[0-2])-(0[1-9]|([12][0-9]|3[01]))T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]")
 	if (!dateRegex.test(date)) {
 		res.status(400).json({
 			error: "Date entered does not follow this format: YYYY-MM-DDTHH:MM:SS"
-		})
-		return
-	}
-
-	// Validation check to ensure required fields are present in the body request
-	if (!eventName || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue || !date) {
-		res.status(400).json({
-			error: "Please ensure you have sent all required arguments in the body these are: "
-				+ "name, organiserAddress, totalSupply, faceValue, date"
 		})
 		return
 	}
