@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const eventSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	name: { type: String, required: true },
+	description: { type: String, required: true },
 	date: {	type: Date, required: true },
 	contractAddress: { type: String, required: true },
 	organiserID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

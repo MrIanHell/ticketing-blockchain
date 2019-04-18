@@ -27,6 +27,7 @@ router.get('/', (req, res, next) => {
 				return {
 					_id: doc._id,
 					name: doc.name,
+					description: doc.description,
 					date: doc.date,
 					contractAddress: doc.contractAddress,
 					organiserID: doc.organiserID,
@@ -98,6 +99,7 @@ router.post('/', checkAuth, async (req, res, next) => {
 
 	// Initialising variables from request body
 	const eventName = req.body.name + ' Ticket'
+	const desc = req.body.description
 	const organiserAddr = userDoc['accAddress']
 	const organiserPrivKey = Buffer.from(userDoc['accPrivKey'], 'hex')
 	const date = req.body.date
@@ -105,10 +107,10 @@ router.post('/', checkAuth, async (req, res, next) => {
 	const pennyFaceValue = req.body.faceValue * 100
 
 	// Validation check to ensure required fields are present in the body request
-	if (!eventName || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue || !date) {
+	if (!eventName || !desc || !organiserAddr || !organiserPrivKey || !totalSupply || !pennyFaceValue || !date) {
 		res.status(400).json({
 			error: "Please ensure you have sent all required arguments in the body these are: "
-				+ "name, totalSupply, faceValue, date"
+				+ "name, description, totalSupply, faceValue, date"
 		})
 		return
 	}
@@ -130,6 +132,7 @@ router.post('/', checkAuth, async (req, res, next) => {
 			const event = new Event({
 				_id: new mongoose.Types.ObjectId(),
 				name: req.body.name,
+				description: desc,
 				date: new Date(date),
 				contractAddress: contract.options.address,
 				organiserID: req.userData.userId, // Pull user ID from returned checkAuth response object
