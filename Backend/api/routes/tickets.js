@@ -144,7 +144,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 		const listingDocs = JSON.parse(JSON.stringify(listingObj))
 		let ticketQtyOnSale = 0
 		for (let doc of listingDocs) {
-			ticketQtyOnSale += doc['quantity']
+			if (eventID === doc['eventID']) ticketQtyOnSale += doc['quantity']
 		}
 
 		// Check owner's balance of tickets from the blockchain and subtract that from the quantity they have available to sell
@@ -178,7 +178,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 			console.log(result)
 			res.status(201).json({
 				message: 'Created a sell listing for ' + eventDoc['name'] + ' for the user ' + req.userData.email,
-				createdEvent: {
+				createdListing: {
 					_id: result._id,
 					eventID: result.eventID,
 					contractAddress: result.contractAddress,
@@ -230,7 +230,10 @@ router.get('/sellListings', (req, res, next) => {
 		if (docs.length > 0) {
 			res.status(200).json(response)
 		}
-		else res.status(404).json({ message: 'No entries available' })
+		else res.status(404).json({
+			numberOfListings: 0,
+			events: []
+		 })
 	}).catch(err => {
 		console.log(err.toString())
 		res.status(500).json({
