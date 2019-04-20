@@ -94,7 +94,7 @@ for event in eventsResponse:
     allEvents.append(event['_id'])
 
 
-# BUYING TICKETS AND CREATING SELL LISTINGS
+# BUYING TICKETS
 # Creating a user to buy tickets and make listings
 print('\nCreating a consumer user to buy and sell tickets...')
 consumer = {'email': 'consumer1@test.com', 

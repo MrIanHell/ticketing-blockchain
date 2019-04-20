@@ -32,7 +32,7 @@ services:
     ports:
       - 8545:8545
     volumes:
-      - eth-data-1:/root # Allows blockchain to persist between container boots
+      - eth-data-1:/root/.ethereum/geth/chaindata # Allows blockchain to persist between container boots
     networks:
       chainnet:
         ipv4_address: 172.25.0.102 # The monitor needs to know this address
@@ -55,7 +55,7 @@ services:
     ports:
       - 8546:8545
     volumes:
-     - eth-data-2:/root # Allows blockchain to persist between container boots
+     - eth-data-2:/root/.ethereum/geth/chaindata # Allows blockchain to persist between container boots
     networks:
       chainnet:
         ipv4_address: 172.25.0.104

@@ -90,7 +90,7 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 		const consumerAddr = req.userData.accAddress
 
 		// Transfer the tickets requested
-		const ticketPrice = await contract.methods.faceValue().call() * quantity// Get face value of ticket
+		const ticketPrice = await contract.methods.faceValue().call() * quantity // Get total price of ticket(s)
 		console.log('Transferring ' + quantity + ' ticket(s) for the event \"' + eventDoc['name'] + '\"...')
 		contractFunctions.transferTickets(organsierAddr, consumerAddr,
 			organiserPrivKey, quantity, ticketPrice, contract).then(txReceipt => {

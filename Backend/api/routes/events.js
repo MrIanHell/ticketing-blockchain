@@ -42,7 +42,10 @@ router.get('/', (req, res, next) => {
 		if (docs.length > 0) {
 			res.status(200).json(response)
 		}
-		else res.status(404).json({ message: 'No entries available' })
+		else res.status(404).json({ 
+			numberOfEvents: 0,
+			events: []
+		})
 	}).catch(err => {
 		console.log(err)
 		res.status(500).json({ error: err.toString() })
