@@ -53,7 +53,7 @@ router.get('/', checkAuth, async (req, res, next) => {
 router.post('/buy', checkAuth, async (req, res, next) => {
 	try {
 		const eventID = req.body.eventID
-		const quantity = req.body.quantity
+		const quantity = parseInt(req.body.quantity)
 
 		// Validation check to ensure required fields are present in the body request
 		if (!eventID || !quantity) {
@@ -74,7 +74,7 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 		const eventDoc = JSON.parse(JSON.stringify(eventObj))
 		const contract = new web3.eth.Contract(abi, eventDoc['contractAddress'])
 		const organsierAddr = eventDoc['organiserAddress']
-		const remainingTickets = await contract.methods.balanceOf(organsierAddr).call()
+		const remainingTickets = parseInt(await contract.methods.balanceOf(organsierAddr).call())
 
 		// Check there are enough tickets left on sale for quantity requested
 		if (remainingTickets < quantity) {
@@ -116,8 +116,8 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 router.post('/sellListings', checkAuth, async (req, res, next) => {
 	try {
 		const eventID = req.body.eventID
-		const sellPrice = req.body.sellPrice
-		const quantity = req.body.quantity
+		const sellPrice = parseInt(req.body.sellPrice)
+		const quantity = parseInt(req.body.quantity)
 		const sellerAddr = req.userData.accAddress
 		const sellerID = req.userData.userId
 		const eventObj = await Event.findById(eventID).select('-__v').exec() // Fetch event details
@@ -149,7 +149,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 
 		// Check owner's balance of tickets from the blockchain and subtract that from the quantity they have available to sell
 		const contract = new web3.eth.Contract(abi, eventDoc['contractAddress'])
-		const ticketsAvailable = (await contract.methods.balanceOf(sellerAddr).call()) - ticketQtyOnSale
+		const ticketsAvailable = parseInt((await contract.methods.balanceOf(sellerAddr).call()) - ticketQtyOnSale)
 		console.log('Tickets available to sell:', ticketsAvailable)
 		if (ticketsAvailable < quantity) {
 			res.status(403).json({ message: 'Cannot create sell listing as user does not own ' + quantity + ' ticket(s) for the event specified' })
@@ -157,7 +157,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 		}
 
 		// Ensure that proposed sale price isn't higher than the ticket's face value
-		const faceValue = await contract.methods.faceValue().call()
+		const faceValue = parseInt(await contract.methods.faceValue().call())
 		if (sellPrice * 100 > faceValue) {
 			res.status(403).json({ message: 'Cannot create sell listing as the sell price is higher than the ticket\'s face value' })
 			return
@@ -311,7 +311,7 @@ router.delete('/sellListings/:listingId', checkAuth, async (req, res, next) => {
 router.post('/sellListings/buy', checkAuth, async (req, res, next) => {
 	try {
 		const listingID = req.body.listingID
-		const quantity = req.body.quantity
+		const quantity = parseInt(req.body.quantity)
 		console.log(listingID)
 		// Validation check to ensure required fields are present in the body request
 		if (!listingID || !quantity) {
@@ -332,10 +332,10 @@ router.post('/sellListings/buy', checkAuth, async (req, res, next) => {
 		const listingDoc = JSON.parse(JSON.stringify(listingObj))
 		const contract = new web3.eth.Contract(abi, listingDoc['contractAddress'])
 		const sellerAddr = listingDoc['sellerAddress']
-		const remainingTickets = await contract.methods.balanceOf(sellerAddr).call()
+		const remainingTickets = parseInt(await contract.methods.balanceOf(sellerAddr).call())
 
 		// Check seller owns enough tickets to sell for quantity requested
-		if (remainingTickets < quantity || listingDoc['quantity'] < quantity) {
+		if (remainingTickets < quantity || parseInt(listingDoc['quantity']) < quantity) {
 			res.status(400).json({
 				message: 'Ticket quantity requested is more than the seller or listing has'
 			})
@@ -348,7 +348,7 @@ router.post('/sellListings/buy', checkAuth, async (req, res, next) => {
 		const buyerAddr = req.userData.accAddress
 
 		// Transfer the tickets requested
-		const ticketPrice = listingDoc['sellPrice'] * quantity // Get price of ticket
+		const ticketPrice = parseInt(listingDoc['sellPrice']) * quantity // Get price of ticket
 		console.log('Transferring ' + quantity + ' ticket(s) for the event...')
 		try {
 			await contractFunctions.transferTickets(sellerAddr, buyerAddr,
@@ -360,7 +360,7 @@ router.post('/sellListings/buy', checkAuth, async (req, res, next) => {
 		console.log('Transfer complete!')
 
 		// Calculate new quantity of tickets left on listing and take appropriate action
-		const newQuantity = listingDoc['quantity'] - quantity
+		const newQuantity = parseInt(listingDoc['quantity']) - quantity
 		if (newQuantity == 0) await TicketListing.deleteOne({ _id: listingID }).exec()
 		else await TicketListing.updateOne({ _id: listingID }, { quantity: newQuantity }).exec()
 
