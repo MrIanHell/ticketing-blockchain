@@ -3,13 +3,6 @@ const urlParams = new URLSearchParams(window.location.search)
 const eventID = urlParams.get('id')
 const address = 'http://localhost:5000'
 
-// Hide loading gif then show it when form is submitted
-$('#pageloader').hide()
-
-$('#buy-tickets-form').submit(() => {
-    $('#pageloader').show()
-})
-
 // Make a GET request to our backend API
 $.getJSON(address + '/events/' + eventID, (eventData) => {
     $('#event-title').replaceWith('<h2>' + eventData['name'] + '</h2>') // Replace title
@@ -41,5 +34,38 @@ $.getJSON(address + '/events/' + eventID, (eventData) => {
     // Set data values to prepare from POST request
     $("#eventID").attr("value", eventID)
     $("#buy-tickets-form").attr("action", address + '/tickets/buy')
+
+})
+
+// Send POST request to /ticket/buy endpoint using form data to buy ticket(s)
+$("#buy-tickets-form").submit(e => {
+    $('#pageloader').css('visibility', 'visible')
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    const form = $("#buy-tickets-form");
+    const url = form.attr('action');
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: form.serialize(), // serializes the form's elements.
+    }).done(data => {
+        $('#response-message').removeClass()
+        $('#response-message').addClass('success-message')
+        $('#response-message').text('Purchase successful!')
+        $('#pageloader').css('visibility', 'hidden')
+    }).fail( (jqXHR, textStatus, errorThrown) => {
+        $('#response-message').removeClass()
+        $('#response-message').addClass('error-message')
+        if (errorThrown == 'Unauthorized') {
+            $('#response-message').text('Please log in to buy tickets')
+        } else if (jqXHR.responseJSON['message']) {
+            $('#response-message').text(jqXHR.responseJSON['message'])
+        }
+        else {
+            $('#response-message').text('Internal server error')
+        }
+        $('#pageloader').css('visibility', 'hidden')
+    })
+
 
 })

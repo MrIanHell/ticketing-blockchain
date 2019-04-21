@@ -2968,10 +2968,25 @@ input, select, textarea {
 	background-color: #fff;
 	z-index: 99;
 	text-align: center;
+	visibility: hidden;
 }
 
 #loading-image {
 	position: absolute;
 	top: 50%;
 	left: 50%;
+}
+
+.success-message {
+	font-size: 15pt;
+	margin: auto;
+	color: #77dd77;
+	font-style: italic;
+}
+
+.error-message {
+	font-size: 15pt;
+	margin: auto;
+	color: #ff6961;
+	font-style: italic;
 }
