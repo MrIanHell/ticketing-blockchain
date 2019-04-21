@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Login</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="no-sidebar is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<section id="header" class="wrapper">
+
+					<!-- Logo -->
+						<div id="logo">
+							<h1>Log In</h1>
+							<p>Log in or sign up to buy and sell tickets using the blockchain</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li class="current"><a href="events.html">Events</a></li>
+								<li><a href="left-sidebar.html">Left Sidebar</a></li>
+								<li><a href="login.html">Log In</a></li>
+							</ul>
+						</nav>
+
+				</section>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style2">
+					<div class="title">Log In / Sign Up</div>
+					<div class="container">
+
+						<!-- Content -->
+							<div id="content">
+								<section >
+									<div class="container">
+										<div class="row aln-center">
+											<div class="col-4 col-8-medium col-12-small">
+											<section>
+													<div class="form">
+													<form id="login-form" method="post" action="#" style="margin: auto;">
+														<div class="row gtr-50">
+															<div class="col-12">
+																	<input type="email" name="email" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+																	oninvalid="setCustomValidity('Enter a valid email address')" required/>
+															</div>
+															<div class="col-12">
+																<input type="password" name="password" placeholder="Password" />
+															</div>
+															<div class="col-12" style="text-align:center;">
+																	<input type="submit" class="style1" value="Log In"/>
+																	<p id="sign-up-msg" style="margin: auto;"><br/>Don't have an account? <a href="#">Sign up here</a></p>
+															</div>	
+															<div id="response-message"></div>															
+														</div>
+													</form>
+													<form id="signup-form" method="post" action="#" style="margin: auto;">
+															<div class="row gtr-50">
+																<div class="col-12">
+																	<input type="email" name="email" id="login-email" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+																	oninvalid="setCustomValidity('Enter a valid email address')" required/>
+																</div>
+																<div class="col-12">
+																	<input type="password" name="password" id="password" placeholder="Password" minlength="8" required  />
+																</div>
+																<div class="col-12">
+																		<input type="password" placeholder="Confirm Password" id="confirm-password" required/>
+																	</div>
+																<div class="col-12" style="text-align:center;">
+																		<input type="submit" class="style1" value="Sign Up"/>
+																		<p id="sign-up-msg" style="margin: auto;"><br/>Already have an account? <a href="#">Log in here</a></p>
+																</div>	
+																<div id="response-message-2"></div>
+															</div>
+														</form>
+											</section>
+										</div>
+									</div>
+								</section>
+							</div>
+
+					</div>
+				</div>
+		</div>
+
+		<!-- Loading Screen -->
+			<div id="pageloader">
+					<img id="loading-image" src="images/loader-large.gif" alt="processing..." />
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/js.cookie.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/authPage.js"></script>
+	</body>
+</html>

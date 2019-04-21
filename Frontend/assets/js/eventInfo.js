@@ -3,6 +3,11 @@ const urlParams = new URLSearchParams(window.location.search)
 const eventID = urlParams.get('id')
 const address = 'http://localhost:5000'
 
+// Setting up auth header from client's saved jwt for requests
+$.ajaxSetup({
+    headers: { 'Authorization': Cookies.get('jwt') }
+})
+
 // Make a GET request to our backend API
 $.getJSON(address + '/events/' + eventID, (eventData) => {
     $('#event-title').replaceWith('<h2>' + eventData['name'] + '</h2>') // Replace title
@@ -42,8 +47,8 @@ $("#buy-tickets-form").submit(e => {
     $('#pageloader').css('visibility', 'visible')
     e.preventDefault(); // avoid to execute the actual submit of the form.
 
-    const form = $("#buy-tickets-form");
-    const url = form.attr('action');
+    const form = $("#buy-tickets-form")
+    const url = form.attr('action')
     $.ajax({
         type: "POST",
         url: url,
