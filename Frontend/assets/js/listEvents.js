@@ -4,7 +4,6 @@ const app = document.getElementById('content')
 // Create a the section where events will be listed
 const events = document.createElement('section')
 events.setAttribute('id', 'highlights')
-events.setAttribute('class', 'wrapper style3')
 
 // Place these events inside a container with appropriate syling
 const container = document.createElement('div')
@@ -34,7 +33,7 @@ request.onload = function () {
 
         // Create a div with the highlight class
         const eventInfo = document.createElement('section')
-        eventInfo.style = 'border: solid 2px; padding: 1em;'
+        eventInfo.style = 'border: solid 3px; padding: 1em; background: #f3f3f3 url("images/overlay.png");'
         eventInfo.setAttribute('class', 'highlight')
 
         // Create an h3 and set the text content to the event's title
