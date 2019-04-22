@@ -7,7 +7,7 @@ $('#sign-up-msg a').click(e => {
     $('form').animate({ height: "toggle", opacity: "toggle" }, "slow")
 })
 
-// Set data values in forms to prepare from POST requests
+// Set data values in forms to prepare forms' POST requests
 $("#login-form").attr("action", backendAddress + '/auth/login')
 $("#signup-form").attr("action", backendAddress + '/auth/signup')
 
@@ -30,7 +30,6 @@ $("#login-form").submit(e => {
 
         // Saving JWT in cookie
         Cookies.set('jwt', 'Bearer ' + data['token'])
-        console.log(Cookies.get('jwt'))
 
         $('#pageloader').css('visibility', 'hidden')
     }).fail((jqXHR, textStatus, errorThrown) => {

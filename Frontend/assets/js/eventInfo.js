@@ -36,7 +36,7 @@ $.getJSON(address + '/events/' + eventID, (eventData) => {
         $("#ticket-price").html('<strong>Total Price:</strong> £' + totalPrice.toFixed(2))
     })
 
-    // Set data values to prepare from POST request
+    // Set data values to prepare form's POST request
     $("#eventID").attr("value", eventID)
     $("#buy-tickets-form").attr("action", address + '/tickets/buy')
 

@@ -44,8 +44,8 @@ request.onload = function () {
         // Get time and date of event
         const date = new Date(event.date)
         const dateTime = document.createElement('p')
-        dateTime.innerHTML = date.toDateString() + ' <br />' + date.getHours() + ':'
-            + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
+        dateTime.innerHTML = date.toDateString() + ' <br />' + (date.getHours() < 10 ? '0' : '') + 
+        date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
 
         // Get description of event
         const desc = document.createElement('p')
