@@ -104,6 +104,15 @@ router.post('/login', (req, res, next) => {
     })
 })
 
+// Allows for user to check whether they're signed in and provides info on their account
+router.get('/', checkAuth, (req, res, next) => {
+    res.status(200).json({
+        email: req.userData.email,
+        userId: req.userData.userId,
+        accAddress: req.userData.accAddress
+    })
+})
+
 // Allows for a user to delete their account
 router.delete('/', checkAuth, (req, res, next) => {
     User.deleteOne({ _id: req.userData.userId }).exec().then(result => {
