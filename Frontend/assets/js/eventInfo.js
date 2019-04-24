@@ -42,7 +42,7 @@ $.getJSON(address + '/events/' + eventID, (eventData) => {
 
 })
 
-// Send POST request to /ticket/buy endpoint using form data to buy ticket(s)
+// Send POST request to /tickets/buy endpoint using form data to buy ticket(s)
 $("#buy-tickets-form").submit(e => {
     $('#pageloader').css('visibility', 'visible')
     e.preventDefault(); // avoid to execute the actual submit of the form.

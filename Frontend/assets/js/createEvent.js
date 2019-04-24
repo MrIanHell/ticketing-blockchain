@@ -41,7 +41,7 @@ $.fn.serializeToJSON = function () {
     return o;
 };
 
-// Send POST request to /ticket/buy endpoint using form data to buy ticket(s)
+// Send POST request to /events endpoint using form data to create an event
 $("#create-event-form").submit(e => {
     $('#pageloader').css('visibility', 'visible')
     e.preventDefault(); // avoid to execute the actual submit of the form.
