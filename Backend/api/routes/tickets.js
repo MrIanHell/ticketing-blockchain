@@ -116,7 +116,7 @@ router.post('/buy', checkAuth, async (req, res, next) => {
 router.post('/sellListings', checkAuth, async (req, res, next) => {
 	try {
 		const eventID = req.body.eventID
-		const sellPrice = parseInt(req.body.sellPrice)
+		const sellPrice = parseFloat(req.body.sellPrice)
 		const quantity = parseInt(req.body.quantity)
 		const sellerAddr = req.userData.accAddress
 		const sellerID = req.userData.userId
@@ -159,7 +159,7 @@ router.post('/sellListings', checkAuth, async (req, res, next) => {
 		// Ensure that proposed sale price isn't higher than the ticket's face value
 		const faceValue = parseInt(await contract.methods.faceValue().call())
 		if (sellPrice * 100 > faceValue) {
-			res.status(403).json({ message: 'Cannot create sell listing as the sell price is higher than the ticket\'s face value' })
+			res.status(403).json({ message: 'Cannot create sell listing as the sell price is higher than the ticket\'s face value (£' + faceValue/100 + ')' })
 			return
 		}
 
