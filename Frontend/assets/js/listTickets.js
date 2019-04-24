@@ -56,7 +56,7 @@ $.getJSON(address + '/tickets/', (ticketsData) => {
         const responseMessage = $('<p id="response-message" style="margin-top: 0.75em;"></p>')
         const submitButtonCSS = 'height: auto; width: 150px; line-height: 1.5em; font-size: 0.75em; margin-top: 1.5em;'
             + 'padding: 0.5em; display: inline-block; white-space: normal;'
-        const inputCSS = 'margin: 3px; width: 200px; display: inline-block;'
+        const inputCSS = 'margin: 3px; width: auto; display: inline-block;'
         sellTicketsForm.attr('style', 'width: auto; margin-top: 25px;')
         submitButton.attr('style', submitButtonCSS)
         ticketQuantity.attr('style', inputCSS)
@@ -122,7 +122,7 @@ $.getJSON(address + '/tickets/', (ticketsData) => {
 }).fail((jqXHR, textStatus, errorThrown) => {
     $('#pageloader').css('visibility', 'hidden')
     if (errorThrown == 'Unauthorized') {
-        $('#subheading-message').text('Please log in to buy tickets')
+        $('#subheading-message').text('Please log in to view your tickets')
     } else if (jqXHR.responseJSON['message']) {
         $('#subheading-message').text(jqXHR.responseJSON['message'])
     }

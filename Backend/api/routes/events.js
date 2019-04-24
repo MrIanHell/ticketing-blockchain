@@ -73,7 +73,6 @@ router.get('/:eventId', (req, res, next) => {
 		const contract = new web3.eth.Contract(abi, doc["contractAddress"])
 
 		contract.methods.faceValue().call().then(faceValue => {
-			console.log(faceValue)
 			doc["faceValue"] = faceValue / 100
 			return contract.methods.totalSupply().call()
 		}).then(totalTickets => {

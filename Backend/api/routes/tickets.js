@@ -211,7 +211,7 @@ router.get('/sellListings', (req, res, next) => {
 	TicketListing.find().select('-__v').exec().then(docs => {
 		const response = {
 			numberOfListings: docs.length,
-			events: docs.map(doc => {
+			listings: docs.map(doc => {
 				return {
 					_id: doc._id,
 					eventID: doc.eventID,
@@ -232,7 +232,7 @@ router.get('/sellListings', (req, res, next) => {
 		}
 		else res.status(404).json({
 			numberOfListings: 0,
-			events: []
+			listings: []
 		 })
 	}).catch(err => {
 		console.log(err.toString())

@@ -22,7 +22,7 @@ $.getJSON(address + '/events/' + eventID, (eventData) => {
     $('#event-info').html('<strong>Date:</strong> ' + formattedDate)
     $('#event-info').append('<br /><strong>Time:</strong> ' + formattedTime)
     $('#event-info').append('<br /><strong>Ticket Face Value:</strong> £' + eventData['faceValue'].toFixed(2))
-    $('#event-info').append('<br /><strong>Remaining Tickets :</strong> ' + (eventData['totalTickets'] - eventData['ticketsSold']))
+    $('#event-info').append('<br /><strong>Remaining Tickets:</strong> ' + (eventData['totalTickets'] - eventData['ticketsSold']))
     $('#event-info').css('font-size', '14pt')
     $('#event-info').css('line-height', '30px')
     $('#event-desc').html(eventData['description'])
