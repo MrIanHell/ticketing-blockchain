@@ -1,4 +1,4 @@
-const backendAddress = 'http://localhost:5000'
+const backendAddress = backendLayerAddress
 
 
 // Toggle between log in and sign up form

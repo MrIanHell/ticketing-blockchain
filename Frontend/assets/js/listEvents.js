@@ -1,6 +1,5 @@
 const app = document.getElementById('content')
 
-
 // Create a the section where events will be listed
 const events = document.createElement('section')
 events.setAttribute('id', 'highlights')
@@ -18,7 +17,7 @@ container.appendChild(row)
 
 // Make a request to our backend API
 const request = new XMLHttpRequest()
-const address = 'http://localhost:5000'
+const address = backendLayerAddress
 
 // Open a new connection, using the GET request on the events endpoint
 request.open('GET', address + '/events', true)

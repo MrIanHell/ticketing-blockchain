@@ -1,5 +1,5 @@
 // Set data values to prepare form's POST request
-const address = 'http://localhost:5000'
+const address = backendLayerAddress
 $("#create-event-form").attr("action", address + '/events')
 
 // Setting up auth header from client's saved jwt for requests

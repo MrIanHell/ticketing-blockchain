@@ -1,4 +1,4 @@
-const address = 'http://localhost:5000'
+const address = backendLayerAddress
 $('#pageloader').css('visibility', 'visible') // Show loading screen whilst fetching tickets
 
 // Setting up auth header from client's saved jwt for requests

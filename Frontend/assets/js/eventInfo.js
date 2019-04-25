@@ -1,7 +1,7 @@
 // Extract event id from URL
 const urlParams = new URLSearchParams(window.location.search)
 const eventID = urlParams.get('id')
-const address = 'http://localhost:5000'
+const address = backendLayerAddress
 
 // Setting up auth header from client's saved jwt for requests
 $.ajaxSetup({

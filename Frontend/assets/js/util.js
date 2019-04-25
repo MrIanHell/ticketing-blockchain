@@ -585,3 +585,5 @@
 	};
 
 })(jQuery);
+
+const backendLayerAddress = 'http://localhost:5000' // Global variable to set the Backend layer API endpoint for all js files
