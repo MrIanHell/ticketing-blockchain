@@ -73,7 +73,7 @@ $.getJSON(address + '/tickets/', (ticketsData) => {
         // using form data to create a sell listing for the user
         sellTicketsForm.submit(e => {
             $('#pageloader').css('visibility', 'visible')
-            e.preventDefault();
+            e.preventDefault()
 
             $.ajax({
                 type: "POST",
