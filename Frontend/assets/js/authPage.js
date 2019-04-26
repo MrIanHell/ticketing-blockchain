@@ -5,6 +5,11 @@ const backendAddress = backendLayerAddress
 $('#sign-up-msg a').click(e => {
     e.preventDefault()
     $('form').animate({ height: "toggle", opacity: "toggle" }, "slow")
+
+    const clicks = $(this).data('clicks')
+    if (clicks) $('#popup-title').text('Log In')
+    else $('#popup-title').text('Sign Up')
+    $(this).data("clicks", !clicks);
 })
 
 // Set data values in forms to prepare forms' POST requests

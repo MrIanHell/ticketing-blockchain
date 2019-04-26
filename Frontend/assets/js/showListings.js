@@ -9,8 +9,8 @@ $.ajaxSetup({
 // Make GET request to fetch tickets owned by authenticated user from the backend layer
 $.getJSON(address + '/tickets/sellListings', (listingsData) => {
     $("#total-ticket-qty").html('<strong>Total number of ticket listings:</strong> ' + listingsData['numberOfListings'])
-
     listingsData['listings'].forEach(listing => {
+        $('#pageloader').css('visibility', 'hidden')
         $.getJSON(address + '/events/' + listing['eventID'], (eventInfo) => {
             const cell = $('<div class="col-4 col-12-medium"></div>')
 
@@ -76,7 +76,7 @@ $.getJSON(address + '/tickets/sellListings', (listingsData) => {
                     responseMessage.removeClass()
                     responseMessage.addClass('error-message')
                     if (errorThrown == 'Unauthorized') {
-                        responseMessage.text('Please log in to buy an tickets from the listing')
+                        responseMessage.text('Please log in to buy tickets from the listing')
                     } else if (jqXHR.responseJSON['message']) {
                         responseMessage.text(jqXHR.responseJSON['message'])
                     } else if (jqXHR.responseJSON['error']) {
