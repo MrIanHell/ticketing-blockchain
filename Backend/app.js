@@ -8,7 +8,8 @@ const eventRoutes = require('./api/routes/events')
 const ticketRoutes = require('./api/routes/tickets')
 const authRoutes = require('./api/routes/auth')
 
-mongoose.connect("mongodb://localhost:27017/ticketing", { useNewUrlParser: true })
+const mongoAddress = process.env.MONGO_ADDRESS || "mongodb://localhost:27017/ticketing"
+mongoose.connect(mongoAddress, { useNewUrlParser: true })
 
 app.use(morgan('dev')) // Logs requests from clients sent to the console 
 
