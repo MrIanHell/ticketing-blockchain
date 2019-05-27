@@ -1,9 +1,9 @@
 version: "3"
 services:
-  content-backend:
-    hostname: content-backend
+  content-frontend:
+    hostname: content-frontend
     build:
       context: .
-    container_name: content-backend-service
+    container_name: content-frontend
     ports: 
       - 5500:80
