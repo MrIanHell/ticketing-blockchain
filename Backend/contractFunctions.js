@@ -98,7 +98,6 @@ async function transferTickets(sourceAcc, destAcc, sourcePrivKey, quantity, pric
  */
 async function createPrefundedAccount(ethAmount) {
 	const adminAddr1 = '0x3590aca93338b0721966a8d0c96ebf2c4c87c544'
-	const adminAddr2 = '0x8cc5a1a0802db41db826c2fcb72423744338dcb0'
 	const privateKey = Buffer.from(process.env.PRIVATE_KEY_1, 'hex')
 	const ethAccount = web3.eth.accounts.create()
 	
