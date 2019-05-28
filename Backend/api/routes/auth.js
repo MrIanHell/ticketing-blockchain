@@ -8,7 +8,8 @@ const checkAuth = require('../check-auth')
 const contractFunctions = require('../../contractFunctions')
 
 const router = express.Router()
-const web3 = new Web3('http://localhost:8545')
+const ethNetworkAddr = process.env.BLOCKCHAIN_ADDR || 'http://localhost:8545'
+const web3 = new Web3(ethNetworkAddr)
 
 // Allows the user to sign-up to the web application
 router.post('/signup', (req, res, next) => {

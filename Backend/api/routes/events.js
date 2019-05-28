@@ -9,7 +9,8 @@ const contractFunctions = require('../../contractFunctions')
 const checkAuth = require('../check-auth')
 
 const router = express.Router()
-const web3 = new Web3('http://localhost:8545')
+const ethNetworkAddr = process.env.BLOCKCHAIN_ADDR || 'http://localhost:8545'
+const web3 = new Web3(ethNetworkAddr)
 
 // Construct the ABI and bytecode from the local TicketToken contract file for smart contract use
 const jsonFilePath = path.join(__dirname, '..', '..', '..', 'Token', 'build', 'contracts', 'TicketToken.json')

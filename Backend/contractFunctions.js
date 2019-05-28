@@ -3,7 +3,8 @@ const Tx = require('ethereumjs-tx')
 const path = require('path')
 const fs = require('fs')
 
-const web3 = new Web3('http://localhost:8545')
+const ethNetworkAddr = process.env.BLOCKCHAIN_ADDR || 'http://localhost:8545'
+const web3 = new Web3(ethNetworkAddr)
 
 /**
  * Deploys a given contract to the blockchain.
